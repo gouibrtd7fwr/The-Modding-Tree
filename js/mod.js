@@ -1,7 +1,7 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
+	name: "The Simply Average Tree",
+	id: "avgeek69420",
+	author: "me!!!",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
 
@@ -43,7 +43,10 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	if (hasUpgrade('s', 11)) gain = gain.times(2);
+	if (hasUpgrade('s', 12)) gain = gain.times(upgradeEffect('s', 12));
 	return gain
+	
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -56,7 +59,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.points.gte(new Decimal("5000"))
 }
 
 
