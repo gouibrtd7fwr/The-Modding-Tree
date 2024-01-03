@@ -13,14 +13,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.0.1a",
+	name: "Almost nothing",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>v0.0.1a</h3><br>
+		- Added Prestige layer (only 1 upgrade as of now).<br>
+		- Added things in Starter layer.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -45,6 +45,7 @@ function getPointGen() {
 	let gain = new Decimal(1)
 	if (hasUpgrade('s', 11)) gain = gain.times(2);
 	if (hasUpgrade('s', 12)) gain = gain.times(upgradeEffect('s', 12));
+	if (hasUpgrade('s', 21)) gain = gain.times(0.5);
 	return gain
 	
 }
@@ -59,7 +60,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("5000"))
+	return player.p.points.gte(new Decimal("2"))
 }
 
 
