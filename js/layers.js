@@ -59,6 +59,20 @@ addLayer("s", {
             description: "Triple starter points, but halve points",
             cost: new Decimal(20),
         },
+    },
+    challenges: {
+        11: {
+            name: "Timewall",
+            challengeDescription: "Square root points.",
+            canComplete: function() {return player.s.points.gte(10)},
+            goalDescription: "Get 10 starter points.",
+                rewardDescription: "Points are buffed based on completions.",
+                rewardEffect() {
+                    let ret = Decimal.pow(1.1, challengeCompletions(this.layer, this.id));
+                    return ret;
+                },
+             completionLimit: "5",
+        },
     }
 })
 addLayer("p", {
