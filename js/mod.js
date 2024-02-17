@@ -18,6 +18,10 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+    <h3>v0.0.1b</h3><br>
+		- Added more stuff in Prestige layer
+		- Removed "Timewall" Challenge.<br>
+
 	<h3>v0.0.1a</h3><br>
 		- Added Prestige layer (only 1 upgrade as of now).<br>
 		- Added things in Starter layer.`
@@ -47,7 +51,6 @@ function getPointGen() {
 	if (hasUpgrade('s', 12)) gain = gain.times(upgradeEffect('s', 12));
 	if (hasUpgrade('s', 21)) gain = gain.times(0.5);
 	if (inChallenge('s', 11)) gain = gain.pow(0.5);
-	if (hasChallenge('s', 11)) gain = gain.times(tmp.s.challenges[11].rewardEffect);
 	return gain
 	
 }
@@ -62,7 +65,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.p.points.gte(new Decimal("3"))
+	return player.p.points.gte(new Decimal("10"))
 }
 
 

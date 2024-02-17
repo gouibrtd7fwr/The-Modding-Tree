@@ -18,6 +18,7 @@ addLayer("s", {
         if (hasUpgrade('s', 13)) mult = mult.times(upgradeEffect('s', 13));
         if (hasUpgrade('s', 21)) mult = mult.times(3);
         mult = mult.times(player.p.points.add(1));
+        if (hasMilestone('p', 11)) mult = mult.times(2);
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -27,6 +28,7 @@ addLayer("s", {
     hotkeys: [
         {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
+    branches: ["p"],
     layerShown(){return true},
     upgrades: {
         11: {
@@ -39,7 +41,7 @@ addLayer("s", {
             description: "Boost points by themselves",
             cost: new Decimal(3),
             effect() {
-                let eff = player.points.add(1).pow(0.5)
+                let eff = player.points.add(1).pow(0.25)
                 return eff;
              },
              effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
@@ -60,20 +62,6 @@ addLayer("s", {
             cost: new Decimal(20),
         },
     },
-    challenges: {
-        11: {
-            name: "Timewall",
-            challengeDescription: "Square root points.",
-            canComplete: function() {return player.s.points.gte(10)},
-            goalDescription: "Get 10 starter points.",
-                rewardDescription: "Points are buffed based on completions.",
-                rewardEffect() {
-                    let ret = Decimal.pow(1.1, challengeCompletions(this.layer, this.id));
-                    return ret;
-                },
-             completionLimit: "5",
-        },
-    }
 })
 addLayer("p", {
     name: "prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -89,10 +77,12 @@ addLayer("p", {
     baseResource: "starter points", // Name of resource prestige is based on
     baseAmount() {return player.s.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.05, // Prestige currency exponent
+    exponent: 0.5, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         if (hasUpgrade('p', 11)) mult = mult.times(upgradeEffect('p', 11));
+        if (hasUpgrade('p', 12)) mult = mult.times(2);
+        if (hasUpgrade('p', 13)) mult = mult.times(upgradeEffect('p', 13));
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -103,6 +93,14 @@ addLayer("p", {
         {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
+    effect() {
+        let eff = player.p.points.add(1).pow(0.2).times(0.5).add(1);
+        if (hasUpgrade('p', 12)) eff = eff.div(upgradeEffect('p', 12))
+        return eff;
+     },
+     effectDescription() {
+        return "which is boosting your starter points gain by " + format(tmp.p.effect)
+     },
     upgrades: {
         11: {
             title: "Self-care",
@@ -113,6 +111,33 @@ addLayer("p", {
                 return eff;
              },
              effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+        },
+        12: {
+            title: "Weird Mechanics",
+            description: "Double Prestige Points",
+            cost: new Decimal(3),
+            effect() {
+                let eff = player.s.points.add(1).pow(0.03)
+                return eff;
+             },
+             effectDisplay() { return "/" + format(upgradeEffect(this.layer, this.id))+" starter points" },
+        },
+        13: {
+            title: "Hyper Boost",
+            description: "Give a massive boost to Prestige Points based on Starter Points",
+            cost: new Decimal(6),
+            effect() {
+                let eff = player.s.points.add(1).times(0.5).pow(0.845)
+                return eff;
+             },
+             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+        },
+    },
+    milestones: {
+        1: {
+            requirementDescription: "Have 5 prestige points",
+            effectDescription: "Double starter points.",
+            done() { return player.p.points.gte(5) },
         },
     }
 })
