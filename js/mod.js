@@ -1,8 +1,8 @@
 let modInfo = {
-	name: "The Simply Average Tree",
-	id: "avgeek69420",
+	name: "The Elements Tree",
+	id: "dumbperson123",
 	author: "me!!!",
-	pointsName: "points",
+	pointsName: "protons",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
@@ -13,18 +13,11 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1a",
+	num: "Alpha 0.0",
 	name: "Almost nothing",
 }
 
-let changelog = `<h1>Changelog:</h1><br>
-    <h3>v0.0.1b</h3><br>
-		- Added more stuff in Prestige layer
-		- Removed "Timewall" Challenge.<br>
-
-	<h3>v0.0.1a</h3><br>
-		- Added Prestige layer (only 1 upgrade as of now).<br>
-		- Added things in Starter layer.`
+let changelog = `<h1>Changelog:</h1><br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -47,10 +40,7 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
-	if (hasUpgrade('s', 11)) gain = gain.times(2);
-	if (hasUpgrade('s', 12)) gain = gain.times(upgradeEffect('s', 12));
-	if (hasUpgrade('s', 21)) gain = gain.times(0.5);
-	if (inChallenge('s', 11)) gain = gain.pow(0.5);
+	if (hasUpgrade('h', 11)) gain = gain.times(2);
 	return gain
 	
 }
@@ -65,7 +55,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.p.points.gte(new Decimal("10"))
+	return player.h.points.gte(new Decimal("10"))
 }
 
 
@@ -79,7 +69,7 @@ var backgroundStyle = {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600) // Default is 1 hour which is just arbitrarily large
+	return(2453535335) // Default is 1 hour which is just arbitrarily large
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
