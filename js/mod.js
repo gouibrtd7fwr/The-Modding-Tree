@@ -8,18 +8,21 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (10), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	offlineLimit: 2147483647,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1",
-	name: "Almost nothing",
+	num: "0.0.2",
+	name: "Helium",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-					<h2>0.0.1:</h2><br>
-					<h3>Added H layer and 4 upgrades</h3>`
+<h2>0.0.2:</h2><br>
+	<h3>Added He layer and 2 upgrades.</h3><br>
+	<h3>Added challenges.</h3><br>
+<h2>0.0.1:</h2><br>
+	<h3>Added H layer and 4 upgrades.</h3><br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -44,6 +47,7 @@ function getPointGen() {
 	let gain = new Decimal(1)
 	if (hasUpgrade('h', 11)) gain = gain.times(2);
 	if (hasUpgrade('h', 13)) gain = gain.times(upgradeEffect('h', 13));
+	if (hasUpgrade('h', 15)) gain = gain.times(3);
 	return gain
 	
 }
@@ -58,7 +62,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade('h', 14)
+	return hasChallenge('he', 11)
 }
 
 
