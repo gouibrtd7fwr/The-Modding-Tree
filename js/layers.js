@@ -38,7 +38,9 @@ addLayer("h", {
             cost: new Decimal(4),
             description: "Boost Hydrogen based on points.",
             effect() {
-                return player.points.add(1).pow(0.125)
+                effect = player.points.add(1).pow(0.125)
+                if (inChallenge('he', 11)) effect = new Decimal(0);
+                return effect
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
         },
@@ -47,7 +49,9 @@ addLayer("h", {
             cost: new Decimal(25),
             description: "Boost points based on themselves.",
             effect() {
-                return player.points.add(1).times(3).pow(0.1)
+                effect = player.points.add(1).times(3).pow(0.1)
+                if (inChallenge('he', 11)) effect = new Decimal(0);
+                return effect
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
         },
