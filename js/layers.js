@@ -42,6 +42,7 @@ addLayer("p", {
         mult = new Decimal(1)
         if (hasUpgrade('p', 12)) mult = mult.times(4);
         if (hasUpgrade('p', 14)) mult = mult.pow(upgradeEffect('p', 14));
+        if (hasUpgrade('p', 15)) mult = mult.times(1.35);
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -82,6 +83,11 @@ addLayer("p", {
                 return eff
             },
             effectDisplay() { return "^" + format(upgradeEffect(this.layer, this.id)) + " PP"},
+        },
+        15: {
+            title: "Buff or Nerf?",
+            description: "/1.25 Points but x1.35 Prestige Points",
+            cost: new Decimal(200),
         },
     },
     milestones: {
