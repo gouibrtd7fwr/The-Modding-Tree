@@ -55,9 +55,11 @@ addLayer("p", {
         mult = new Decimal(1)
         if (hasUpgrade('p', 12)) mult = mult.times(4);
         mult = mult.times(buyableEffect('p', 11));
+        mult = mult.times(tmp.b.effect);
         if (hasUpgrade('p', 14)) mult = mult.pow(upgradeEffect('p', 14));
         if (hasUpgrade('p', 15)) mult = mult.times(1.35);
         if (hasAchievement('a', 13)) mult = mult.times(1.12);
+        if (hasUpgrade('b', 12)) mult = mult.times(100);
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -65,6 +67,32 @@ addLayer("p", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     layerShown(){return true},
+    doReset(p) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[p].row <= this.row) return;
+    
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 21, Milestones
+        let keptUpgrades = [];
+        for(i=1;i<5;i++){ //rows
+            for(v=1;v<3;v++){ //columns
+                if ((hasUpgrade('b', 11)) && hasUpgrade(this.layer, 11) || (hasUpgrade('b', 12)) && hasUpgrade(this.layer, 11)) keptUpgrades.push(11)
+                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 12)) keptUpgrades.push(12)
+                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 13)) keptUpgrades.push(13)
+                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 14)) keptUpgrades.push(14)
+                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 21)) keptUpgrades.push(21)
+                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 22)) keptUpgrades.push(22)
+                if ((hasUpgrade('b', 11)) && hasUpgrade(this.layer, 15) || (hasUpgrade('b', 12)) && hasUpgrade(this.layer, 15)) keptUpgrades.push(15)
+            }
+          }   
+        // Stage 3, track which main features you want to keep - milestones
+        let keep = [];
+    
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+    
+        // Stage 5, add back in the specific subfeatures you saved earlier
+        player[this.layer].upgrades.push(...keptUpgrades);
+    },  
     tabFormat: {
         "Main": {
             content: [
@@ -133,7 +161,7 @@ addLayer("p", {
         },
         22: {
             title: "Base booster.",
-            description: "Add 0.05 to Buyable 1's base.",
+            description: "Add 0.05 to Buyable 1's base and unlock a new LAYER!!.",
             cost: new Decimal(750),
             unlocked() {return (hasUpgrade('p', 15))}
         },
@@ -190,4 +218,63 @@ addLayer("p", {
                 },
             },
         },
+})
+addLayer("b", {
+    name: "boosters", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "B", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "#0026ff",
+    requires: new Decimal(350), // Can be a function that takes requirement increases into account
+    resource: "boosters", // Name of prestige currency
+    baseResource: "prestige points", // Name of resource prestige is based on
+    baseAmount() {return player.p.points}, // Get the current amount of baseResource
+    type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent() {
+        let exp = new Decimal(1.5)
+        return exp
+    }, // Prestige currency exponent
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mult = new Decimal(1)
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    row: 1, // Row the layer is in on the tree (0 is the first row)
+    layerShown(){
+        let visible = false
+        if (player.p.points.gte(300) || player.b.unlocked || player.b.points.gte(1)) visible = true
+       return visible
+    },
+    unlocked() {return (hasUpgrade('p', 22))},
+    effect() {
+        let base = new Decimal(2)
+        let eff = player.b.points.pow(base);
+        return eff;
+     },
+    branches: ["p"],
+    tabFormat: [
+        "main-display",
+        "blank",
+        "prestige-button",
+        "upgrades",
+        "blank",
+        "milestones",
+    ],
+    upgrades: {
+        11: {
+            title: "Finally. A bit of a break!",
+            description: "Keep Prestige Upgrades 1 and 5 on reset.",
+            cost: new Decimal(3),
+        },
+         12: {
+            title: "Boosts!!!",
+            description: "Keep all prestige upgrades on reset and x100 PP.",
+            cost: new Decimal(7),
+        },
+    },
 })

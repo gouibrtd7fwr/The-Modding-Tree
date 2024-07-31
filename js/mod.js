@@ -13,11 +13,13 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.3 - More Buyables",
-	name: "Buyables 2!",
+	num: "0.0.4 - BOOSTERS!",
+	name: "Boosters!",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.4</h3><br>
+		- Added a new layer.<br>
 	<h3>v0.0.3</h3><br>
 		- Added more upgrades and another buyable<br>
 		- Buffed PB1 Scaling.<br>
