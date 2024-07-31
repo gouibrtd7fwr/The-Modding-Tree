@@ -1,7 +1,7 @@
 let modInfo = {
 	name: "The Limit",
 	id: "limit2",
-	author: "somebody",
+	author: "whyliterall",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
 
@@ -13,11 +13,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.2 - Prestige Buyables",
-	name: "Buyables!",
+	num: "0.0.3 - More Buyables",
+	name: "Buyables 2!",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.3</h3><br>
+		- Added more upgrades and another buyable<br>
+		- Buffed PB1 Scaling.<br>
 	<h3>v0.0.2</h3><br>
 		- Added a few upgrades and a buyable.<br>
 	<h3>v0.0.1</h3><br>
@@ -50,6 +53,7 @@ function getPointGen() {
 	if (hasAchievement('a', 12)) gain = gain.times(1.5);
 	if (hasUpgrade('p', 15)) gain = gain.times(0.8);
 	if (hasUpgrade('p', 21)) gain = gain.times(1.2);
+	gain = gain.times(buyableEffect('p', 12));
 	return gain
 }
 

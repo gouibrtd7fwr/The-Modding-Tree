@@ -29,6 +29,11 @@ addLayer("a", {
             done() {return (hasUpgrade('p', 14))},
             tooltip: "Get 'Exponentiation'. Reward: x1.5 Points"
         },
+        13: {
+            name: "Buyables!",
+            done() {return (hasUpgrade('p', 15))},
+            tooltip: "Unlock Buyables! Reward: x1.12 Prestige Points"
+        },
     },
 })
 addLayer("p", {
@@ -52,6 +57,7 @@ addLayer("p", {
         mult = mult.times(buyableEffect('p', 11));
         if (hasUpgrade('p', 14)) mult = mult.pow(upgradeEffect('p', 14));
         if (hasUpgrade('p', 15)) mult = mult.times(1.35);
+        if (hasAchievement('a', 13)) mult = mult.times(1.12);
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -67,7 +73,7 @@ addLayer("p", {
                 "blank",
                 "milestones",
                 "blank",
-                "upgrades",
+                "upgrades"
                 ],
         },
         "Buyables": {
@@ -75,7 +81,7 @@ addLayer("p", {
                 "main-display",
                 "prestige-button",
                 "blank",
-                "buyables",
+                "buyables"
                 ],
         },
     },
@@ -125,6 +131,12 @@ addLayer("p", {
             cost: new Decimal(400),
             unlocked() {return (hasUpgrade('p', 15))}
         },
+        22: {
+            title: "Base booster.",
+            description: "Add 0.05 to Buyable 1's base.",
+            cost: new Decimal(750),
+            unlocked() {return (hasUpgrade('p', 15))}
+        },
     },
     milestones: {
         1: {
@@ -138,7 +150,7 @@ addLayer("p", {
                 title: "Incremental Prestige!",
                 unlocked() {return (hasUpgrade('p', 21))},
                 cost(x) {
-                    let exp1 = new Decimal(1.005)
+                    let exp1 = new Decimal(1.03)
                     return new Decimal(250).pow(exp1, x).floor()
                 },
                 display() {return "Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " PP." + "<br>Bought: " + getBuyableAmount(this.layer, this.id) + "<br>Effect: Boost PP gain by x" + format(buyableEffect(this.layer, this.id))},
@@ -150,6 +162,28 @@ addLayer("p", {
                 },
                 effect(x) {
                     let base1 = new Decimal(1.25)
+                    if (hasUpgrade('p', 22)) base1 = new Decimal(1.3)
+                    let base2 = x
+                    let eff = base1.pow(base2)
+                    return eff
+                },
+            },
+            12: {
+                title: "Large Boost",
+                unlocked() {return (hasUpgrade('p', 21))},
+                cost(x) {
+                    let exp2 = new Decimal(1.2)
+                    return new Decimal(500).pow(exp2, x).floor()
+                },
+                display() {return "Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " PP." + "<br>Bought: " + getBuyableAmount(this.layer, this.id) + "<br>Effect: Boost points gain by x" + format(buyableEffect(this.layer, this.id))},
+                canAfford() { return player[this.layer].points.gte(this.cost()) },
+                buy() {
+                    let cost = new Decimal(1)
+                    player.p.points = player.p.points.sub(this.cost().mul(cost))
+                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                },
+                effect(x) {
+                    let base1 = new Decimal(1.075)
                     let base2 = x
                     let eff = base1.pow(base2)
                     return eff
