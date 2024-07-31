@@ -13,11 +13,13 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1",
-	name: "Something at least",
+	num: "0.0.2 - Prestige Buyables",
+	name: "Buyables!",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.2</h3><br>
+		- Added a few upgrades and a buyable.<br>
 	<h3>v0.0.1</h3><br>
 		- Added upgrades and achievements.<br>
 		- Added a milestone.`
@@ -47,6 +49,7 @@ function getPointGen() {
 	if (hasUpgrade('p', 13)) gain = gain.times(upgradeEffect('p', 13));
 	if (hasAchievement('a', 12)) gain = gain.times(1.5);
 	if (hasUpgrade('p', 15)) gain = gain.times(0.8);
+	if (hasUpgrade('p', 21)) gain = gain.times(1.2);
 	return gain
 }
 

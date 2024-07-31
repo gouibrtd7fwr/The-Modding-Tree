@@ -8,6 +8,14 @@ addLayer("a", {
     tooltip() { // Optional, tooltip displays when the layer is locked
         return ("Achievements")
     },
+    tabFormat: {
+        "Achievements (1)": {
+            content: [
+                ["achievements", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]],
+                "blank",
+                ],
+        },
+    },
     achievements: {
     rows: 25,
     cols: 6,
@@ -41,6 +49,7 @@ addLayer("p", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         if (hasUpgrade('p', 12)) mult = mult.times(4);
+        mult = mult.times(buyableEffect('p', 11));
         if (hasUpgrade('p', 14)) mult = mult.pow(upgradeEffect('p', 14));
         if (hasUpgrade('p', 15)) mult = mult.times(1.35);
         return mult
@@ -50,6 +59,26 @@ addLayer("p", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     layerShown(){return true},
+    tabFormat: {
+        "Main": {
+            content: [
+                "main-display",
+                "prestige-button",
+                "blank",
+                "milestones",
+                "blank",
+                "upgrades",
+                ],
+        },
+        "Buyables": {
+            content: [
+                "main-display",
+                "prestige-button",
+                "blank",
+                "buyables",
+                ],
+        },
+    },
     upgrades: {
         11: {
             title: "Simple.",
@@ -88,6 +117,13 @@ addLayer("p", {
             title: "Buff or Nerf?",
             description: "/1.25 Points but x1.35 Prestige Points",
             cost: new Decimal(200),
+            unlocked() {return (hasUpgrade('p', 14))}
+        },
+        21: {
+            title: "New features!",
+            description: "x1.2 Points and unlock Buyables.",
+            cost: new Decimal(400),
+            unlocked() {return (hasUpgrade('p', 15))}
         },
     },
     milestones: {
@@ -97,4 +133,27 @@ addLayer("p", {
             done() {return player.p.points.gte(100)}
         },
     },
+    buyables: {
+            11: {
+                title: "Incremental Prestige!",
+                unlocked() {return (hasUpgrade('p', 21))},
+                cost(x) {
+                    let exp1 = new Decimal(1.005)
+                    return new Decimal(250).pow(exp1, x).floor()
+                },
+                display() {return "Cost: " + format(tmp[this.layer].buyables[this.id].cost) + " PP." + "<br>Bought: " + getBuyableAmount(this.layer, this.id) + "<br>Effect: Boost PP gain by x" + format(buyableEffect(this.layer, this.id))},
+                canAfford() { return player[this.layer].points.gte(this.cost()) },
+                buy() {
+                    let cost = new Decimal(1)
+                    player.p.points = player.p.points.sub(this.cost().mul(cost))
+                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                },
+                effect(x) {
+                    let base1 = new Decimal(1.25)
+                    let base2 = x
+                    let eff = base1.pow(base2)
+                    return eff
+                },
+            },
+        },
 })
