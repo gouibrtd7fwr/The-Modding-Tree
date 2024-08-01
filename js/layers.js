@@ -34,6 +34,11 @@ addLayer("a", {
             done() {return (hasUpgrade('p', 15))},
             tooltip: "Unlock Buyables! Reward: x1.12 Prestige Points"
         },
+        14: {
+            name: "No broken mouse.",
+            done() {return (hasUpgrade('b', 13))},
+            tooltip: "Get Passive Gen in Prestige layer. Hint: Check Prestige! Reward: x1.05 boosters."
+        },
     },
 })
 addLayer("p", {
@@ -56,6 +61,7 @@ addLayer("p", {
         if (hasUpgrade('p', 12)) mult = mult.times(4);
         mult = mult.times(buyableEffect('p', 11));
         mult = mult.times(tmp.b.effect);
+        if (hasUpgrade('p', 23)) mult = mult.pow(1.05)
         if (hasUpgrade('p', 14)) mult = mult.pow(upgradeEffect('p', 14));
         if (hasUpgrade('p', 15)) mult = mult.times(1.35);
         if (hasAchievement('a', 13)) mult = mult.times(1.12);
@@ -67,6 +73,10 @@ addLayer("p", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     layerShown(){return true},
+    passiveGeneration() {
+        if (hasUpgrade('b', 13)) return 0.1
+        return 0
+    },
     doReset(p) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[p].row <= this.row) return;
@@ -76,16 +86,12 @@ addLayer("p", {
         for(i=1;i<5;i++){ //rows
             for(v=1;v<3;v++){ //columns
                 if ((hasUpgrade('b', 11)) && hasUpgrade(this.layer, 11) || (hasUpgrade('b', 12)) && hasUpgrade(this.layer, 11)) keptUpgrades.push(11)
-                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 12)) keptUpgrades.push(12)
-                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 13)) keptUpgrades.push(13)
-                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 14)) keptUpgrades.push(14)
-                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 21)) keptUpgrades.push(21)
-                if ((hasUpgrade('b', 12)) && hasUpgrade(this.layer, 22)) keptUpgrades.push(22)
                 if ((hasUpgrade('b', 11)) && hasUpgrade(this.layer, 15) || (hasUpgrade('b', 12)) && hasUpgrade(this.layer, 15)) keptUpgrades.push(15)
             }
           }   
         // Stage 3, track which main features you want to keep - milestones
         let keep = [];
+        if (hasUpgrade('b', 12)) keep.push("upgrades");
     
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -165,6 +171,12 @@ addLayer("p", {
             cost: new Decimal(750),
             unlocked() {return (hasUpgrade('p', 15))}
         },
+        23: {
+            title: "Booster-focused!",
+            description: "Buff booster effect and make PP and boosters cheaper.",
+            cost: new Decimal(100000),
+            unlocked() {return (hasAchievement('a', 14))}
+        },
     },
     milestones: {
         1: {
@@ -235,6 +247,8 @@ addLayer("b", {
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent() {
         let exp = new Decimal(1.5)
+        if (hasAchievement('a', 14)) exp = exp.sub(0.07)
+        if (hasUpgrade('p', 23)) exp = exp.sub(0.05)
         return exp
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -250,17 +264,28 @@ addLayer("b", {
         if (player.p.points.gte(300) || player.b.unlocked || player.b.points.gte(1)) visible = true
        return visible
     },
+    canBuyMax() {
+        let canMaxBst = false
+        if (hasMilestone('b', 1)) canMaxBst = true
+        return canMaxBst
+    },
     unlocked() {return (hasUpgrade('p', 22))},
     effect() {
         let base = new Decimal(2)
-        let eff = player.b.points.pow(base);
+        if (hasMilestone('b', 2)) base.add(0.5)
+        if (hasUpgrade('p', 23)) base.add(0.25)
+        let eff = base.pow(player.b.points);
         return eff;
-     },
+    },
+    effectDescription() {
+        return "which are boosting PP by " + format(tmp.b.effect)
+    },   
     branches: ["p"],
     tabFormat: [
         "main-display",
         "blank",
         "prestige-button",
+        "blank",
         "upgrades",
         "blank",
         "milestones",
@@ -271,10 +296,27 @@ addLayer("b", {
             description: "Keep Prestige Upgrades 1 and 5 on reset.",
             cost: new Decimal(3),
         },
-         12: {
+        12: {
             title: "Boosts!!!",
             description: "Keep all prestige upgrades on reset and x100 PP.",
             cost: new Decimal(7),
+        },
+        13: {
+            title: "No more clicking!",
+            description: "You now gain 10% of PP gained on reset every second.",
+            cost: new Decimal(9),
+        },
+    },
+    milestones: {
+        1: {
+            requirementDescription: "No clicking 10000 times anymore!",
+            effectDescription: "Unlock buy max!",
+            done() {return player.b.points.gte(8)}
+        },
+        2: {
+            requirementDescription: "Boosting Boosters",
+            effectDescription: "Boosters effect base is now 2.5!",
+            done() {return player.b.points.gte(12)}
         },
     },
 })

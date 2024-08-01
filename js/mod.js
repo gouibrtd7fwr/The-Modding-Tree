@@ -13,11 +13,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.4 - BOOSTERS!",
-	name: "Boosters!",
+	num: "0.0.5 - BOOSTERS!",
+	name: "Boosters craziness!",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.5</h3><br>
+		- Added upgrades, milestones, and an achievement.
+		- Next update will include challenges!
 	<h3>v0.0.4</h3><br>
 		- Added a new layer.<br>
 	<h3>v0.0.3</h3><br>
