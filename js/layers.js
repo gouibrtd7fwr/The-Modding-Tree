@@ -11,9 +11,26 @@ addLayer("a", {
     tooltip() {
         return ("Achievements")
     },
+    tabFormat: {
+        "Achievements": {
+            content: [
+                ["achievements", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]],
+                "blank",
+                ],
+        },
+    },
     achievements: {
-        rows: 25,
+        rows: 18,
         cols: 6,
+    },
+    tabFormat: [
+        "blank", 
+        ["display-text", function() { return "Achievements: "+player.a.achievements.length+"/"+(Object.keys(tmp.a.achievements).length-2) }], 
+        "blank", "blank",
+        "achievements",
+    ],
+    update(diff) {    // Added this section to call adjustNotificationTime every tick, to reduce notification timers
+        adjustNotificationTime(diff);
     },
 })
 addLayer("m", {
