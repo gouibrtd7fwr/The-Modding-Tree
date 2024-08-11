@@ -1,8 +1,8 @@
 let modInfo = {
-	name: "The Elements Tree",
-	id: "dumbperson123",
-	author: "me!!!",
-	pointsName: "protons",
+	name: "The Button Sim Tree",
+	id: "definitelysomething",
+	author: "ofc its me",
+	pointsName: "Cash",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
@@ -13,22 +13,13 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.2.1",
-	name: "Helium p2",
+	num: "0.0",
+	name: "Button Sim",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-<h2>NOTE:</h2><br>
-	<h3>Versions are in vA.B.C.D!</h3><br>
-	<h3>A: Complete Rework, B: Major Rework/Massive Update, C: Normal Update, D: Patches/Bugfixes.</h3><br>
-<h2>0.0.2.1:</h2><br>
-	<h3>Added a challenge and 2 upgrades.</h3><br>
-	<h3>Added achievements for QoL.</h3><br>
-<h2>0.0.2:</h2><br>
-	<h3>Added He layer and 2 upgrades.</h3><br>
-	<h3>Added challenges.</h3><br>
-<h2>0.0.1:</h2><br>
-	<h3>Added H layer and 4 upgrades.</h3><br>`
+<h3>0.0:</h3><br>
+	<h3>Nothing.</h3><br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -51,14 +42,6 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
-	if (hasAchievement('a', 11)) gain = gain.times(1.5);
-	if (hasUpgrade('h', 11)) gain = gain.times(2);
-	if (hasUpgrade('h', 13)) gain = gain.times(upgradeEffect('h', 13));
-	if (hasUpgrade('h', 15)) gain = gain.times(3);
-	if (hasChallenge('he', 12)) gain = gain.pow(1.2);
-	if (hasUpgrade('he', 14)) gain = gain.pow(1.001);
-	return gain
-	
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
@@ -71,7 +54,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade('he', 14)
+	return player.points.gte("1e280000000")
 }
 
 
