@@ -13,7 +13,7 @@
 
 	<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 
-	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+	<script src="js/vueFile.js"></script>
 	<script src="js/technical/break_eternity.js"></script>
 	<script src="js/technical/layerSupport.js"></script>
 
@@ -25,6 +25,7 @@
 	
 	<script src="js/game.js"></script>
 	<script src="js/utils.js"></script>
+	<script src="js/math.js"></script>
 	<script src="js/utils/easyAccess.js"></script>
 	<script src="js/technical/systemComponents.js"></script>
 	<script src="js/components.js"></script>
@@ -37,8 +38,8 @@
 
 </head>
 
-
 <body onload="load()" onmousemove="updateMouse(event)">
+	
 	<div id="app">
 		<canvas id="treeCanvas" class="canvas" v-if="!(tmp.gameEnded && !player.keepGoing)"></canvas>
 
@@ -71,7 +72,10 @@
 			col: (player.tab !== 'none' && player.navTab !== 'none'), 
 			left: (player.tab !== 'none' && player.navTab !== 'none')}"
 			 :style="{'margin-top': !readData(layoutInfo.showTree) && player.tab == 'info-tab' ? '50px' : ''}">
-			<div id="version" onclick="showTab('changelog-tab')" class="overlayThing" style="margin-right: 13px" >
+			 <div id = "newsTicker">
+				<div id = "newsContent" style = "display: inline-block; position: relative;"></div>
+			</div>
+			<div id="version" onclick="showTab('changelog-tab')" class="overlayThing" style="margin-right: 13px">
 				{{VERSION.withoutName}}</div>
 			<button
 			v-if="((player.navTab == 'none' && (tmp[player.tab].row == 'side' || tmp[player.tab].row == 'otherside' || player[player.tab].prevTab)) || player[player.navTab]?.prevTab)"				class="other-back overlayThing" onclick="goBack(player.navTab == 'none' ? player.tab : player.navTab)">←</button>
@@ -98,7 +102,6 @@
 				</div>
 			</div>
 		</div>
-		
 		<div v-if="!(tmp.gameEnded && !player.keepGoing) && (player.tab === 'none' || tmp.other.splitScreen)" id="treeTab"  onscroll="resizeCanvas()" 
 			v-bind:class="{ fullWidth: (player.tab == 'none' || player.navTab == 'none'), col: (player.tab !== 'none' && player.navTab !== 'none'), left: (player.tab !== 'none' && player.navTab !== 'none')}">
 			<br><br><br><br>
@@ -107,7 +110,6 @@
 			<layer-tab :layer="player.navTab == 'none' ? player.tab : player.navTab" :key="'left'"></layer-tab>
 			<bg :layer="player.navTab == 'none' ? player.tab : player.navTab" ></bg>
 		</div>
-
 		<!-- Popups -->
 		<div class="popup-container">
 			<transition-group name="fade">
@@ -123,7 +125,6 @@
 					<particle :data="particle" :index="index" v-bind:key="'b' + particle.id"></particle>
 				</div>
 		</div>
-
 		<div v-if="player.navTab !== 'none' && player.tab !== 'none' && !(tmp.gameEnded && !player.keepGoing)" onscroll="resizeCanvas()" v-bind:class="{ fullWidth: player.navTab == 'none' || !tmp.other.splitScreen || !readData(layoutInfo.showTree), col: player.navTab != 'none', right: player.navTab != 'none', fast: true, tab: true}">
 			<div v-for="layer in LAYERS">
 				<div v-if="player.tab==layer">
@@ -134,6 +135,6 @@
 
 		</div>
 		<div class = "bg2" v-bind:style = "tmp.backgroundStyle"></div>
-
 	</div>
+</div>
 </body>
