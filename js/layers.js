@@ -12,9 +12,10 @@ addLayer("d", {
     baseResource: "cents", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.70710678118, // Prestige currency exponent
+    exponent: 0.6, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        if (hasUpgrade('d', 12)) mult = mult.times(upgradeEffect('d', 12))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -22,7 +23,29 @@ addLayer("d", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "d", description: "D: Reset for dollars", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return true}
+    layerShown(){return true},
+
+    upgrades: {
+        11: {
+            title: 'Faster Money',
+            description: 'Double cents speed.',
+            cost: new Decimal(1)
+        },
+        12: {
+            title: 'Deflation',
+            description: 'Decrease price of dollars based on your dollars.',
+            cost: new Decimal(3),
+            unlocked() {return (hasUpgrade('d', 11))},
+            effect() {
+                let eff = player[this.layer].points.pow(0.45)
+                eff = softcap(eff, new Decimal(1e3), 0.9)
+                return eff
+            },
+            effectDisplay() {
+                return format(upgradeEffect(this.layer, this.id)) + 'x'
+            }
+        }
+    }
 })
