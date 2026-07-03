@@ -1,13 +1,13 @@
 let modInfo = {
-	name: "The ??? Tree",
+	name: "The Universe Tree",
 	author: "nobody",
-	pointsName: "points",
+	pointsName: "matter balls",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (10), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	offlineLimit: 0,  // In hours
 }
 
 // Set your version in num and name
@@ -33,7 +33,8 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	if (hasUpgrade('f', 11)) return true;
+	else return false;
 }
 
 // Calculate points/sec!
@@ -42,6 +43,13 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	// foam upgrades
+	if (hasUpgrade('f', 12)) gain = gain.mul(upgradeEffect('f', 12))
+	if (hasUpgrade('f', 13)) gain = gain.mul(upgradeEffect('f', 13))
+	if (hasUpgrade('f', 15)) gain = gain.mul(3)
+		
+	// foam milestones	
+	if (hasMilestone('f', 1)) gain = gain.mul(2)
 	return gain
 }
 
