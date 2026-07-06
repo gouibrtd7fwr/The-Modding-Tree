@@ -2,7 +2,7 @@ let modInfo = {
 	name: "The Universe Tree",
 	author: "nobody",
 	pointsName: "matter balls",
-	modFiles: ["layers.js", "tree.js"],
+	modFiles: ["layers/foam.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -12,14 +12,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.0.1",
+	name: "SpaceTime",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>v0.0.1</h3><br>
+		- Added base gameplay.<br>
+		- Endgame: Time Upgrade 3 bought.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -33,8 +33,7 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	if (hasUpgrade('f', 11)) return true;
-	else return false;
+	return hasUpgrade('f', 11)
 }
 
 // Calculate points/sec!
@@ -43,10 +42,14 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+
+	// add -> mul -> exp -> ...
+
 	// foam upgrades
 	if (hasUpgrade('f', 12)) gain = gain.mul(upgradeEffect('f', 12))
 	if (hasUpgrade('f', 13)) gain = gain.mul(upgradeEffect('f', 13))
 	if (hasUpgrade('f', 15)) gain = gain.mul(3)
+	if (hasUpgrade('f', 32)) gain = gain.mul(2.5)
 		
 	// foam milestones	
 	if (hasMilestone('f', 1)) gain = gain.mul(2)
@@ -59,11 +62,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	"Endgame: Time Upgrade 3 bought."
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return hasUpgrade('f', 33) && hasUpgrade('f', 23)
 }
 
 
