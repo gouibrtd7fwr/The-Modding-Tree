@@ -62,7 +62,8 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Endgame: Time Upgrade 3 bought."
+	`<br>Endgame: Time Upgrade 3 bought.
+	 <br>No offline progress!`
 ]
 
 // Determines when the game "ends"
