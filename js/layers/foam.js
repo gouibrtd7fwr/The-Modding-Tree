@@ -25,6 +25,7 @@ addLayer("f", {
         mult = mult.mul(player.f.timeBoost)
         // -- exp
         if (hasUpgrade('f', 31)) mult = mult.pow(1.1)
+        if (hasUpgrade('f', 34)) mult = mult.pow(upgradeEffect('f', 34))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -38,14 +39,20 @@ addLayer("f", {
     calculateTimeGain() {
         let gain = new Decimal(1)
         if (hasUpgrade('f', 23)) gain = gain.mul(upgradeEffect('f', 23))
+        if (hasUpgrade('f', 24)) gain = gain.mul(upgradeEffect('f', 24))
         if (hasUpgrade('f', 32)) gain = gain.mul(1.5)
         if (hasMilestone('f', 3)) gain = gain.mul(1.2)
         return gain
     },
+    calculateTimeBoost() {
+        let boost = player.f.time.add(1).pow(0.125)
+        if (hasMilestone('f', 4)) boost = player.f.time.add(1).pow(0.14)
+        return boost
+    },
     update(delta) {
         if (hasUpgrade('f', 22)) {
             player.f.time = player.f.time.add(player.f.timeSpeed.mul(delta))
-            player.f.timeBoost = player.f.time.add(1).pow(0.125)
+            player.f.timeBoost = this.calculateTimeBoost()
             player.f.timeSpeed = this.calculateTimeGain()
         }
     },
@@ -62,6 +69,7 @@ addLayer("f", {
             effect() {
                 let eff = player.f.points.plus(1).pow(0.4)
                 if (hasUpgrade('f', 21)) eff = eff.mul(1.3)
+                if (hasMilestone('f', 5)) eff = eff.mul(1.2)
                 return eff
             },
             effectDisplay() {return format(tmp.f.upgrades[12].effect) + 'x'}
@@ -74,6 +82,7 @@ addLayer("f", {
                 let eff = player.points.plus(1).pow(0.15)
                 if (hasUpgrade('f', 15)) eff = eff.mul(1.25)
                 if (hasUpgrade('f', 21)) eff = eff.mul(1.15)
+                if (hasMilestone('f', 5)) eff = eff.mul(1.175)
                 return eff
             },
             effectDisplay() {return format(tmp.f.upgrades[13].effect) + 'x'}
@@ -85,6 +94,8 @@ addLayer("f", {
             effect() {
                 let eff = player.points.plus(1).pow(0.125)
                 if (hasUpgrade('f', 21)) eff = eff.mul(1.1)
+                if (hasMilestone('f', 4)) eff = eff.mul(1.25)
+                if (hasMilestone('f', 5)) eff = eff.mul(1.3)
                 return eff
             },
             effectDisplay() {return format(tmp.f.upgrades[14].effect) + 'x'}
@@ -122,9 +133,21 @@ addLayer("f", {
             unlocked() {return hasMilestone('f', 3)},
             effect() {
                 let eff = player.points.add(1).pow(0.075).mul(0.5).add(1)
+                if (hasMilestone('f', 5)) eff = eff.mul(1.25)
                 return eff
             },
             effectDisplay() {return format(tmp.f.upgrades[23].effect) + 'x'}
+        },
+        24: {
+            title: "Multi-Foaming",
+            description: "Quantum foam boosts time.",
+            cost: new Decimal(1.5e4),
+            unlocked() {return hasUpgrade('f', 23)},
+            effect() {
+                let eff = player.f.points.add(1).pow(0.125).mul(0.4).add(1)
+                return eff
+            },
+            effectDisplay() {return format(tmp.f.upgrades[24].effect) + 'x'}
         },
         31: {
             title: "Exponents?",
@@ -159,6 +182,24 @@ addLayer("f", {
                 player.f.points = player.f.points.sub(7500)
             }
         },
+        34: {
+            title: "Achievement Boosting",
+            description: "Quantum foam is boosted by milestones completed.",
+            cost: new Decimal(3e3),
+            currencyDisplayName: "seconds of time",
+            unlocked() {return hasUpgrade('f', 33)},
+            effect() {
+                let milestonesCompleted = new Decimal(player.f.milestones.length)
+                let eff = milestonesCompleted.add(1).pow(0.05).mul(1.05)
+                return eff
+            },
+            effectDisplay() {return "^" + format(tmp.f.upgrades[34].effect)},
+            
+            canAfford(){return player.f.time.gte(3e3)},
+			pay() {
+                player.f.time = player.f.time.sub(3e3)
+            }
+        },
     },
     milestones: {
         1: {
@@ -176,6 +217,17 @@ addLayer("f", {
             effectDescription: "Unlock 2 new upgrades and boost time gain by 1.2x.",
             done() {return player.f.points.gte(2500) && player.f.time.gte(100)}
         },
+        4: {
+            requirementDescription: "Get 10,000 quantum foam.",
+            effectDescription: "Buff Upgrade 4's effect and time's effect.",
+            done() {return player.f.points.gte(1e4)}
+        },
+        5: {
+            requirementDescription: "Get 50,000 quantum foam.",
+            effectDescription: "Upgrades 2-4 and 9's effects are boosted.",
+            done() {return player.f.points.gte(5e4)},
+            unlocked() {return hasMilestone('f', 4)}
+        },
     },
 
     tabFormat: {
@@ -185,7 +237,7 @@ addLayer("f", {
                 "prestige-button",
                 "blank",
                 ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16]]],
-                ["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23]]],
+                ["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24]]],
             ]
         },
         "Milestones": {
@@ -209,7 +261,7 @@ addLayer("f", {
                 ["display-text",
                     function() {return 'You are gaining ' + formatTime(player.f.timeSpeed) + '/second.'}
                 ],
-                ["row", [["upgrade", 31], ["upgrade", 32], ["upgrade", 33]]],
+                ["row", [["upgrade", 31], ["upgrade", 32], ["upgrade", 33], ["upgrade", 34]]],
             ]
         },
     },

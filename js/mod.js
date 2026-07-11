@@ -12,16 +12,19 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1",
+	num: "0.0.1p2",
 	name: "SpaceTime",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.1p2</h3><br>
+		- Added more gameplay to Quantum Foam layer.<br>
+		- Endgame: Time Upgrade 4 bought & Milestone 5 reached.<br>
 	<h3>v0.0.1</h3><br>
 		- Added base gameplay.<br>
 		- Endgame: Time Upgrade 3 bought.`
 
-let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
+let winText = `Congratulations! You have reached the end and beaten this game, but only for now...`
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -62,13 +65,13 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	`<br>Endgame: Time Upgrade 3 bought.
+	`<br>Endgame: Time Upgrade 4 bought & Milestone 5 reached.
 	 <br>No offline progress!`
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade('f', 33) && hasUpgrade('f', 23)
+	return hasUpgrade('f', 34) && hasMilestone('f', 5)
 }
 
 
