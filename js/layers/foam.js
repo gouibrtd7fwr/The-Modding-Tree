@@ -36,6 +36,11 @@ addLayer("f", {
         {key: "f", description: "F: Reset for quantum foam", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
+    passiveGeneration() {
+        let gps = new Decimal(0)
+        if (hasUpgrade('f', 35)) gps = new Decimal(0.01)
+        return gps
+    },
     calculateTimeGain() {
         let gain = new Decimal(1)
         if (hasUpgrade('f', 23)) gain = gain.mul(upgradeEffect('f', 23))
@@ -47,6 +52,7 @@ addLayer("f", {
     calculateTimeBoost() {
         let boost = player.f.time.add(1).pow(0.125)
         if (hasMilestone('f', 4)) boost = player.f.time.add(1).pow(0.14)
+        if (hasUpgrade('f', 26)) boost = player.f.time.add(1).pow(0.16)
         return boost
     },
     update(delta) {
@@ -95,6 +101,7 @@ addLayer("f", {
                 let eff = player.points.plus(1).pow(0.125)
                 if (hasUpgrade('f', 21)) eff = eff.mul(1.1)
                 if (hasMilestone('f', 4)) eff = eff.mul(1.25)
+                if (hasUpgrade('f', 26)) eff = eff.mul(1.5)
                 if (hasMilestone('f', 5)) eff = eff.mul(1.3)
                 return eff
             },
@@ -149,6 +156,22 @@ addLayer("f", {
             },
             effectDisplay() {return format(tmp.f.upgrades[24].effect) + 'x'}
         },
+        25: {
+            title: "Matter Tickspeed",
+            description: "Time also boosts matter balls at a reduced rate.",
+            cost: new Decimal(2e5),
+            unlocked() {return hasUpgrade('f', 24)},
+            effect() {
+                let eff = player.f.timeBoost.pow(0.75)
+                return eff
+            },
+        },
+        26: {
+            title: "Milestones Boosting???",
+            description: "Boost milestone 4's effect drastically.",
+            cost: new Decimal(2e6),
+            unlocked() {return hasUpgrade('f', 25)},
+        },
         31: {
             title: "Exponents?",
             description: "Boost quantum foam by ^1.1.",
@@ -200,6 +223,18 @@ addLayer("f", {
                 player.f.time = player.f.time.sub(3e3)
             }
         },
+        35: {
+            title: "Passive Resetting",
+            description: "Gain 1% of your on-reset quantum foam every second.",
+            cost: new Decimal(1e4),
+            currencyDisplayName: "seconds of time",
+            unlocked() {return hasUpgrade('f', 34)},
+            
+            canAfford(){return player.f.time.gte(1e4)},
+			pay() {
+                player.f.time = player.f.time.sub(1e4)
+            }
+        },
     },
     milestones: {
         1: {
@@ -228,6 +263,41 @@ addLayer("f", {
             done() {return player.f.points.gte(5e4)},
             unlocked() {return hasMilestone('f', 4)}
         },
+        6: {
+            requirementDescription: "Get 1 million quantum foam.",
+            effectDescription: "Unlock buyables.",
+            done() {return player.f.points.gte(1e6)},
+            unlocked() {return hasUpgrade('f', 35)}
+        },
+    },
+    buyables: {
+        1: {
+            title: "Repeatable Boosting",
+            display() {
+                let bought = getBuyableAmount(this.layer, this.id)
+                let data = tmp[this.layer].buyables[this.id]
+
+                return `Effect: Adds 1 to base matter balls gain/buy.
+                
+                Amount bought: ${format(bought)}/50.
+                
+                Costs ${format(data.cost)} quantum foam`
+            },
+            purchaseLimit: new Decimal(50),
+            cost(x) {return new Decimal(1e5).mul(x.pow(1.1).add(1))},
+            unlocked() {return hasMilestone('f', 6)},
+            effect() {
+                let eff = getBuyableAmount(this.layer, this.id)
+                return eff
+            },
+            canAfford() {
+                return player[this.layer].points.gte(this.cost())
+            },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                addBuyables(this.layer, this.id, new Decimal(1))
+            }
+        },
     },
 
     tabFormat: {
@@ -237,7 +307,7 @@ addLayer("f", {
                 "prestige-button",
                 "blank",
                 ["row", [["upgrade", 11], ["upgrade", 12], ["upgrade", 13], ["upgrade", 14], ["upgrade", 15], ["upgrade", 16]]],
-                ["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24]]],
+                ["row", [["upgrade", 21], ["upgrade", 22], ["upgrade", 23], ["upgrade", 24], ["upgrade", 25], ["upgrade", 26]]],
             ]
         },
         "Milestones": {
@@ -256,12 +326,25 @@ addLayer("f", {
                 "prestige-button",
                 "blank",
                 ["display-text",
-                    function() {return 'You have gained ' + format(player.f.time) + ' seconds. This is boosting quantum foam by ' + format(player.f.timeBoost) + 'x'}
+                    function() {
+                        let text = 'You have gained ' + format(player.f.time) + ' seconds. This is boosting quantum foam by ' + format(player.f.timeBoost) + 'x'
+                        if (hasUpgrade('f', 25)) text = 'You have gained ' + format(player.f.time) + ' seconds. This is boosting quantum foam by ' + format(player.f.timeBoost) + 'x' + ' and matter balls by ' + format(tmp.f.upgrades[25].effect) + 'x'
+                        return text
+                    }
                 ],
                 ["display-text",
                     function() {return 'You are gaining ' + formatTime(player.f.timeSpeed) + '/second.'}
                 ],
-                ["row", [["upgrade", 31], ["upgrade", 32], ["upgrade", 33], ["upgrade", 34]]],
+                ["row", [["upgrade", 31], ["upgrade", 32], ["upgrade", 33], ["upgrade", 34], ["upgrade", 35]]],
+            ]
+        },
+        "Buyables": {
+            unlocked() {return hasMilestone('f', 6)},
+            content: [
+                "main-display",
+                "prestige-button",
+                "blank",
+                ["row", [["buyable", 1]]],
             ]
         },
     },

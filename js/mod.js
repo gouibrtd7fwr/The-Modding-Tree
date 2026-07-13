@@ -12,11 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1p2",
+	num: "0.0.1p3",
 	name: "SpaceTime",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.0.1p3</h3><br>
+		- Added more upgrades.<br>
+		- Added buyables to Foam.<br>
+		- Endgame: Upgrade 12 bought and buyable 1 bought 10 times.<br>
 	<h3>v0.0.1p2</h3><br>
 		- Added more gameplay to Quantum Foam layer.<br>
 		- Endgame: Time Upgrade 4 bought & Milestone 5 reached.<br>
@@ -47,12 +51,14 @@ function getPointGen() {
 	let gain = new Decimal(1)
 
 	// add -> mul -> exp -> ...
+	gain = gain.add(buyableEffect('f', 1))
 
 	// foam upgrades
 	if (hasUpgrade('f', 12)) gain = gain.mul(upgradeEffect('f', 12))
 	if (hasUpgrade('f', 13)) gain = gain.mul(upgradeEffect('f', 13))
 	if (hasUpgrade('f', 15)) gain = gain.mul(3)
 	if (hasUpgrade('f', 32)) gain = gain.mul(2.5)
+	if (hasUpgrade('f', 25)) gain = gain.mul(upgradeEffect('f', 25))
 		
 	// foam milestones	
 	if (hasMilestone('f', 1)) gain = gain.mul(2)
@@ -65,13 +71,13 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	`<br>Endgame: Time Upgrade 4 bought & Milestone 5 reached.
+	`<br>Endgame: Upgrade 12 bought & buyable 1 bought 10 times.
 	 <br>No offline progress!`
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade('f', 34) && hasMilestone('f', 5)
+	return hasUpgrade('f', 26) && getBuyableAmount('f', 1).gte(10)
 }
 
 
